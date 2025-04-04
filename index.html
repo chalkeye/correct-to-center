@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        #container {
+            display: flex;
+            height: 100vh;
+        }
+
+        #canvasContainer {
+            position: relative;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        #controls {
+            width: 300px;
+            padding: 20px;
+            background: #f0f0f0;
+            z-index: 10;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: none;
+            z-index: 1;
+        }
+
+        #crosshair {
+            position: absolute;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div id="canvasContainer">
+            <canvas id="mainCanvas"></canvas>
+            <img id="crosshair" src="crosshair.png" style="pointer-events:none;">
+        </div>
+        <div id="controls">
+            <h3>Controls</h3>
+            <!-- Mil Scale (Pixels) -->
+            <div class="control-group">
+                <label for="milScale">Mil Scale (pixels):</label>
+                <input type="number" id="milScale" min="1" value="50">
+            </div>
+
+            <!-- Target Size -->
+            <div class="control-group">
+                <label for="targetSize">Target Size (Mils):</label>
+                <input type="number" id="targetSize" min="1" value="1">
+            </div>
+
+            <!-- Wind Speed -->
+            <div class="control-group">
+                <label for="windSpeed">Wind Speed (mph):</label>
+                <input type="number" id="windSpeed" min="0" value="8">
+            </div>
+
+            <!-- Wind Angle -->
+            <div class="control-group">
+                <label for="windAngle">Wind Angle (degrees):</label>
+                <input type="number" id="windAngle" min="0" max="360" value="90">
+            </div>
+
+            <!-- Wind Uncertainty -->
+            <div class="control-group">
+                <label for="windUncertainty">Wind Uncertainty (mph):</label>
+                <input type="number" id="windUncertainty" min="0" value="3">
+                <label for="windUncertaintyToggle">Wind Uncertainty On:</label>
+                <input type="checkbox" id="windUncertaintyToggle" checked>
+                <button id="applyWindUncertainty">Apply</button>
+            </div>
+
+            <!-- Range -->
+            <div class="control-group">
+                <label for="range">Range (m):</label>
+                <input type="number" id="range" min="0" value="100">
+            </div>
+
+            <!-- Impact Duration -->
+            <div class="control-group">
+                <label for="impactDuration">Impact Duration (ms):</label>
+                <input type="number" id="impactDuration" min="0" value="200">
+            </div>
+
+            <!-- Impact Size -->
+            <div class="control-group">
+                <label for="impactWidth">Impact Width (pixels):</label>
+                <input type="number" id="impactWidth" min="1" value="5">
+            </div>
+            <div class="control-group">
+                <label for="impactHeight">Impact Height (pixels):</label>
+                <input type="number" id="impactHeight" min="1" value="5">
+            </div>
+
+            <!-- Recoil -->
+            <h3>Recoil</h3>
+            <div class="control-group">
+                <label for="recoilToggle">Recoil On:</label>
+                <input type="checkbox" id="recoilToggle" checked>
+            </div>
+            <div class="control-group">
+                <label for="verticalRecoil">Vertical Recoil (mils):</label>
+                <input type="number" id="verticalRecoil" value="-1.1">
+            </div>
+            <div class="control-group">
+                <label for="horizontalRecoil">Horizontal Recoil (mils):</label>
+                <input type="number" id="horizontalRecoil" value="0.2">
+            </div>
+            <div class="control-group">
+                <label for="recoilRandomisation">Recoil randomisation (mils):</label>
+                <input type="number" id="recoilRandomisation" value="0.2">
+            </div>
+
+            <!-- Reset Button and Score -->
+            <button id="reset">Reset Score</button>
+            <p>Score: <span id="score">0</span></p>
+
+            <!-- Crosshair Scaling -->
+            <div class="control-group">
+                <label for="crosshairScale">Crosshair Scaling (%):</label>
+                <input type="range" id="crosshairScale" min="0" max="200" value="100">
+                <input type="number" id="crosshairScaleNumber" min="0" max="200" value="100">
+            </div>
+
+            <!-- Miliradian Overlay -->
+            <div class="control-group">
+                <label for="milOverlay">Miliradian Overlay:</label>
+                <input type="checkbox" id="milOverlay">
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        const crosshair = document.getElementById('crosshair');
+        let impacts = [];
+        let score = 0;
+        let windUncertaintyApplied = 0;
+
+        // Load background image
+        const backgroundImage = new Image();
+        backgroundImage.src = 'background.jpg'; // Replace with your image file path
+        backgroundImage.onload = () => draw(); // Ensure background image is loaded before drawing
+
+        // Resize canvas to fit its container
+        function resizeCanvas() {
+            const containerRect = document.getElementById('canvasContainer').getBoundingClientRect();
+            canvas.width = containerRect.width;
+            canvas.height = containerRect.height;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Crosshair movement
+        let crosshairX = 0;
+        let crosshairY = 0;
+
+        function updateCrosshairPosition(x, y) {
+            crosshairX = x;
+            crosshairY = y;
+            crosshair.style.left = `${crosshairX - crosshair.width / 2}px`;
+            crosshair.style.top = `${crosshairY - crosshair.height / 2}px`;
+        }
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            updateCrosshairPosition(mouseX, mouseY);
+        });
+
+        // Crosshair scaling control
+        const crosshairScaleInput = document.getElementById('crosshairScale');
+        const crosshairScaleNumberInput = document.getElementById('crosshairScaleNumber');
+
+        crosshairScaleInput.addEventListener('input', () => {
+            const scale = parseFloat(crosshairScaleInput.value) / 100;
+            crosshair.style.transform = `scale(${scale})`;
+            crosshairScaleNumberInput.value = crosshairScaleInput.value;
+        });
+
+        crosshairScaleNumberInput.addEventListener('input', () => {
+            const scale = parseFloat(crosshairScaleNumberInput.value) / 100;
+            crosshair.style.transform = `scale(${scale})`;
+            crosshairScaleInput.value = crosshairScaleNumberInput.value;
+        });
+
+        // Linear interpolation function
+        function lerp(x, in_min, in_max, out_min, out_max) {
+            return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+        }
+
+        // Function to calculate TOF based on range
+        function calculateTOF(range) {
+            let tof;
+
+            if (range <= 100) {
+                tof = lerp(range, 0, 100, 0, 0.12);
+            } else if (range <= 300) {
+                tof = lerp(range, 100, 300, 0.12, 0.39);
+            } else if (range <= 600) {
+                tof = lerp(range, 300, 600, 0.39, 0.87);
+            } else if (range <= 900) {
+                tof = lerp(range, 600, 900, 0.87, 1.49);
+            } else if (range <= 1200) {
+                tof = lerp(range, 900, 1200, 1.49, 2.31);
+            } else {
+                tof = 2.31 + (range - 1200) * (2.31 - 1.49) / (1200 - 900); // Extrapolate linearly beyond 1200m
+            }
+
+            return tof * 1000; // Convert to milliseconds
+        }
+
+        // Fire projectile
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            let clickX = e.clientX - rect.left;
+            let clickY = e.clientY - rect.top;
+
+            const windSpeed = parseFloat(document.getElementById('windSpeed').value);
+            const windAngleRad = (parseFloat(document.getElementById('windAngle').value) * Math.PI) / 180;
+            let windMilsX = 0.1 * ((1.1 * windSpeed) * Math.sin(windAngleRad));
+            const milScale = parseFloat(document.getElementById('milScale').value);
+
+            // Get range and calculate TOF
+            const range = parseFloat(document.getElementById('range').value);
+            const projectileTOF = calculateTOF(range);
+
+            const impactDuration = parseFloat(document.getElementById('impactDuration').value);
+            const impactWidth = parseFloat(document.getElementById('impactWidth').value);
+            const impactHeight = parseFloat(document.getElementById('impactHeight').value);
+
+            // Apply wind uncertainty
+            windMilsX += windUncertaintyApplied;
+
+            // Apply recoil
+            let verticalRecoil = 0;
+            let horizontalRecoil = 0;
+            const recoilToggle = document.getElementById('recoilToggle').checked;
+
+            if (recoilToggle) {
+                const verticalRecoilMils = parseFloat(document.getElementById('verticalRecoil').value);
+                const horizontalRecoilMils = parseFloat(document.getElementById('horizontalRecoil').value);
+                const recoilRandomisationMils = parseFloat(document.getElementById('recoilRandomisation').value);
+
+                const randomVerticalMils = (Math.random() * 2 - 1) * recoilRandomisationMils;
+                const randomHorizontalMils = (Math.random() * 2 - 1) * recoilRandomisationMils;
+
+                // Convert recoil to pixels
+                verticalRecoil = (verticalRecoilMils + randomVerticalMils) * milScale;
+                horizontalRecoil = (horizontalRecoilMils + randomHorizontalMils) * milScale;
+            }
+
+            // Update crosshair position WITH recoil
+            updateCrosshairPosition(
+                crosshairX + horizontalRecoil,
+                crosshairY + verticalRecoil
+            );
+
+            // Calculate impact position
+            let impactX = clickX + windMilsX * milScale;
+            let impactY = clickY;
+
+            const newImpact = {
+                x: impactX,
+                y: impactY,
+                width: impactWidth,
+                height: impactHeight
+            };
+
+            setTimeout(() => {
+                impacts.push(newImpact);
+                setTimeout(() => {
+                    impacts = impacts.filter(i => i !== newImpact);
+                }, impactDuration);
+
+                // Check hit
+                const targetSizePx = parseFloat(document.getElementById('targetSize').value) * 50;
+                if (
+                    impactX >= canvas.width / 2 - targetSizePx / 2 &&
+                    impactX <= canvas.width / 2 + targetSizePx / 2 &&
+                    impactY >= canvas.height / 2 - targetSizePx / 2 &&
+                    impactY <= canvas.width / 2 + targetSizePx / 2
+                ) {
+                    score++;
+                    document.getElementById('score').textContent = score;
+                }
+            }, projectileTOF);
+        });
+
+        document.getElementById('applyWindUncertainty').addEventListener('click', () => {
+            const windUncertainty = parseFloat(document.getElementById('windUncertainty').value);
+            const windUncertaintyToggle = document.getElementById('windUncertaintyToggle').checked;
+
+            if (windUncertaintyToggle) {
+                windUncertaintyApplied = (Math.random() * 2 - 1) * (0.1 * windUncertainty);
+            } else {
+                windUncertaintyApplied = 0;
+            }
+        });
+
+        function drawMiliradianOverlay() {
+            if (!document.getElementById('milOverlay').checked) return;
+
+            ctx.strokeStyle = '#ccc';
+            ctx.lineWidth = 1;
+
+            // Draw vertical lines
+            const milScale = parseFloat(document.getElementById('milScale').value);
+            for (let x = 0; x <= canvas.width; x += milScale) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+
+            // Draw horizontal lines
+            for (let y = 0; y <= canvas.width; y += milScale) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw background image
+            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+            // Draw target area (white rectangle)
+            const milScale = parseFloat(document.getElementById('milScale').value);
+            const targetSizePx = parseFloat(document.getElementById('targetSize').value) * milScale;
+            ctx.fillStyle = 'white';
+            ctx.fillRect(
+                canvas.width / 2 - targetSizePx / 2,
+                canvas.height / 2 - targetSizePx / 2,
+                targetSizePx,
+                targetSizePx
+            );
+
+            // Draw impacts
+            impacts.forEach((impact) => {
+                ctx.strokeStyle = 'black';
+                ctx.beginPath();
+                ctx.moveTo(impact.x - impact.width / 2, impact.y - impact.height / 2);
+                ctx.lineTo(impact.x + impact.width / 2, impact.y + impact.height / 2);
+                ctx.moveTo(impact.x + impact.width / 2, impact.y - impact.height / 2);
+                ctx.lineTo(impact.x - impact.width / 2, impact.y + impact.height / 2);
+                ctx.stroke();
+            });
+
+            drawMiliradianOverlay();
+
+            requestAnimationFrame(draw);
+        }
+
+        document.getElementById('reset').addEventListener('click', () => {
+            score = 0;
+            impacts = [];
+            document.getElementById('score').textContent = score;
+        });
+
+        // Set initial crosshair scale
+        crosshairScaleInput.value = 125;
+        crosshairScaleNumberInput.value = 125;
+        crosshairScaleInput.dispatchEvent(new Event('input'));
+    </script>
+</body>
+
+</html>
