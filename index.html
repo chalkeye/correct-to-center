@@ -36,12 +36,83 @@
         }
 
         .control-group {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+        }
+
+        .control-group h4 {
+            margin-bottom: 5px;
+        }
+
+        .control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3px;
+        }
+
+        .control-row label {
+            margin-bottom: 0;
         }
 
         label {
             display: block;
             margin-bottom: 5px;
+        }
+
+        /* Collapsible settings */
+        .collapsible {
+            background-color: #777;
+            color: white;
+            cursor: pointer;
+            padding: 10px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .active,
+        .collapsible:hover {
+            background-color: #555;
+        }
+
+        .content {
+            padding: 0 18px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+            background-color: #f1f1f1;
+        }
+
+        #targetButtons {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            /* Ensure buttons are above the canvas */
+        }
+
+        #targetButtons button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        /* Background Overlay Style */
+        #backgroundOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.15);
+            /* Initial darkness: 15% */
+            z-index: 2;
+            /* Place above background image */
+            pointer-events: none;
+            /* Allows clicks to pass through */
         }
     </style>
 </head>
@@ -49,21 +120,88 @@
 <body>
     <div id="container">
         <div id="canvasContainer">
+            <div id="targetButtons">
+                <button id="T1" onclick="setTarget('T1')">T1</button>
+                <button id="T2" onclick="setTarget('T2')">T2</button>
+                <button id="T3" onclick="setTarget('T3')">T3</button>
+                <button id="T4" onclick="setTarget('T4')">T4</button>
+                <button id="T5" onclick="setTarget('T5')">T5</button>
+            </div>
+            <div id="backgroundOverlay"></div>
+            <!-- Overlay for background darkness -->
             <canvas id="mainCanvas"></canvas>
             <img id="crosshair" src="crosshair.png" style="pointer-events:none;">
         </div>
         <div id="controls">
             <h3>Controls</h3>
+
             <!-- Mil Scale (Pixels) -->
             <div class="control-group">
                 <label for="milScale">Mil Scale (pixels):</label>
                 <input type="number" id="milScale" min="1" value="50">
             </div>
 
-            <!-- Target Size -->
-            <div class="control-group">
-                <label for="targetSize">Target Size (Mils):</label>
-                <input type="number" id="targetSize" min="1" value="1">
+            <button type="button" class="collapsible">Target Settings</button>
+            <div class="content">
+                <div class="control-group">
+                    <h4>T1</h4>
+                    <div class="control-row">
+                        <label for="targetSizeT1">Size (Mils):</label>
+                        <input type="number" id="targetSizeT1" min="0" value="0.5" onchange="updateTargetSize('T1')">
+                    </div>
+                    <div class="control-row">
+                        <label for="targetRangeT1">Range (m):</label>
+                        <input type="number" id="targetRangeT1" min="0" value="400" onchange="updateTargetRange('T1')">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h4>T2</h4>
+                    <div class="control-row">
+                        <label for="targetSizeT2">Size (Mils):</label>
+                        <input type="number" id="targetSizeT2" min="0" value="0.5" onchange="updateTargetSize('T2')">
+                    </div>
+                    <div class="control-row">
+                        <label for="targetRangeT2">Range (m):</label>
+                        <input type="number" id="targetRangeT2" min="0" value="500" onchange="updateTargetRange('T2')">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h4>T3</h4>
+                    <div class="control-row">
+                        <label for="targetSizeT3">Size (Mils):</label>
+                        <input type="number" id="targetSizeT3" min="0" value="0.5" onchange="updateTargetSize('T3')">
+                    </div>
+                    <div class="control-row">
+                        <label for="targetRangeT3">Range (m):</label>
+                        <input type="number" id="targetRangeT3" min="0" value="600" onchange="updateTargetRange('T3')">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h4>T4</h4>
+                    <div class="control-row">
+                        <label for="targetSizeT4">Size (Mils):</label>
+                        <input type="number" id="targetSizeT4" min="0" value="0.5" onchange="updateTargetSize('T4')">
+                    </div>
+                    <div class="control-row">
+                        <label for="targetRangeT4">Range (m):</label>
+                        <input type="number" id="targetRangeT4" min="0" value="700" onchange="updateTargetRange('T4')">
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h4>T5</h4>
+                    <div class="control-row">
+                        <label for="targetSizeT5">Size (Mils):</label>
+                        <input type="number" id="targetSizeT5" min="0" value="0.5" onchange="updateTargetSize('T5')">
+                    </div>
+                    <div class="control-row">
+                        <label for="targetRangeT5">Range (m):</label>
+                        <input type="number" id="targetRangeT5" min="0" value="800" onchange="updateTargetRange('T5')">
+                    </div>
+                </div>
             </div>
 
             <!-- Wind Speed -->
@@ -85,12 +223,6 @@
                 <label for="windUncertaintyToggle">Wind Uncertainty On:</label>
                 <input type="checkbox" id="windUncertaintyToggle" checked>
                 <button id="applyWindUncertainty">Apply</button>
-            </div>
-
-            <!-- Range -->
-            <div class="control-group">
-                <label for="range">Range (m):</label>
-                <input type="number" id="range" min="0" value="100">
             </div>
 
             <!-- Impact Duration -->
@@ -131,7 +263,6 @@
             <!-- Reset Button and Score -->
             <button id="reset">Reset Score</button>
             <p>Score: <span id="score">0</span></p>
-
             <!-- Crosshair Scaling -->
             <div class="control-group">
                 <label for="crosshairScale">Crosshair Scaling (%):</label>
@@ -145,6 +276,11 @@
                 <input type="checkbox" id="milOverlay">
             </div>
 
+            <!-- Background Darkness -->
+            <div class="control-group">
+                <label for="backgroundDarkness">Background Darkness:</label>
+                <input type="range" id="backgroundDarkness" min="0" max="1" value="0.15" step="0.01" oninput="updateBackgroundDarkness(this.value)">
+            </div>
         </div>
     </div>
 
@@ -152,20 +288,89 @@
         const canvas = document.getElementById('mainCanvas');
         const ctx = canvas.getContext('2d');
         const crosshair = document.getElementById('crosshair');
+        const backgroundOverlay = document.getElementById('backgroundOverlay'); // Get the overlay element
         let impacts = [];
         let score = 0;
         let windUncertaintyApplied = 0;
+        let activeTarget = null;
+        let targets = {};
 
         // Load background image
         const backgroundImage = new Image();
-        backgroundImage.src = 'background.jpg'; // Replace with your image file path
-        backgroundImage.onload = () => draw(); // Ensure background image is loaded before drawing
+        backgroundImage.src = 'background.jpg';
+        backgroundImage.onload = () => {
+            initializeTargets();
+            draw();
+        };
+
+        // Function to initialize target positions and sizes
+        function initializeTargets() {
+            const middleThirdStart = canvas.height / 3;
+            const middleThirdEnd = 2 * canvas.height / 3;
+            const verticalSpacing = (middleThirdEnd - middleThirdStart) / 5;
+
+            targets['T1'] = {
+                x: canvas.width / 4 + Math.random() * (canvas.width / 2),
+                y: middleThirdStart + 4.5 * verticalSpacing,
+                size: parseFloat(document.getElementById('targetSizeT1').value),
+                range: parseFloat(document.getElementById('targetRangeT1').value),
+                label: 'T1'
+            };
+            targets['T2'] = {
+                x: canvas.width / 4 + Math.random() * (canvas.width / 2),
+                y: middleThirdStart + 3.5 * verticalSpacing,
+                size: parseFloat(document.getElementById('targetSizeT2').value),
+                range: parseFloat(document.getElementById('targetRangeT2').value),
+                label: 'T2'
+            };
+            targets['T3'] = {
+                x: canvas.width / 4 + Math.random() * (canvas.width / 2),
+                y: middleThirdStart + 2.5 * verticalSpacing,
+                size: parseFloat(document.getElementById('targetSizeT3').value),
+                range: parseFloat(document.getElementById('targetRangeT3').value),
+                label: 'T3'
+            };
+            targets['T4'] = {
+                x: canvas.width / 4 + Math.random() * (canvas.width / 2),
+                y: middleThirdStart + 1.5 * verticalSpacing,
+                size: parseFloat(document.getElementById('targetSizeT4').value),
+                range: parseFloat(document.getElementById('targetRangeT4').value),
+                label: 'T4'
+            };
+            targets['T5'] = {
+                x: canvas.width / 4 + Math.random() * (canvas.width / 2),
+                y: middleThirdStart + 0.5 * verticalSpacing,
+                size: parseFloat(document.getElementById('targetSizeT5').value),
+                range: parseFloat(document.getElementById('targetRangeT5').value),
+                label: 'T5'
+            };
+        }
+
+        // Function to set the active target
+        function setTarget(targetId) {
+            activeTarget = targetId;
+        }
+
+        // Functions to update target properties
+        function updateTargetSize(targetId) {
+            targets[targetId].size = parseFloat(document.getElementById(`targetSize${targetId}`).value);
+        }
+
+        // Function to update background darkness
+        function updateBackgroundDarkness(darkness) {
+            backgroundOverlay.style.backgroundColor = `rgba(0, 0, 0, ${darkness})`;
+        }
+
+        function updateTargetRange(targetId) {
+            targets[targetId].range = parseFloat(document.getElementById(`targetRange${targetId}`).value);
+        }
 
         // Resize canvas to fit its container
         function resizeCanvas() {
             const containerRect = document.getElementById('canvasContainer').getBoundingClientRect();
             canvas.width = containerRect.width;
             canvas.height = containerRect.height;
+            initializeTargets();
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
@@ -230,21 +435,49 @@
             return tof * 1000; // Convert to milliseconds
         }
 
+        // Function to calculate wind shift in mils based on range and wind speed
+        function calculateWindShift(range, windSpeed) {
+            let windShift;
+
+            // Linear interpolation based on provided data points
+            if (range <= 100) {
+                windShift = lerp(range, 0, 100, 0, 0.2);
+            } else if (range <= 400) {
+                windShift = lerp(range, 100, 400, 0.2, 0.9);
+            } else if (range <= 700) {
+                windShift = lerp(range, 400, 700, 0.9, 1.7);
+            } else if (range <= 1100) {
+                windShift = lerp(range, 700, 1100, 1.7, 3.3);
+            } else if (range <= 1600) {
+                windShift = lerp(range, 1100, 1600, 3.3, 5.6);
+            } else {
+                // Extrapolate linearly beyond 1600m (example)
+                windShift = 5.6 + (range - 1600) * (5.6 - 3.3) / (1600 - 1100);
+            }
+
+            return windShift * (windSpeed / 10); // Scale wind shift by wind speed, relative to 10mph
+        }
+
         // Fire projectile
         canvas.addEventListener('click', (e) => {
             const rect = canvas.getBoundingClientRect();
             let clickX = e.clientX - rect.left;
             let clickY = e.clientY - rect.top;
-
             const windSpeed = parseFloat(document.getElementById('windSpeed').value);
             const windAngleRad = (parseFloat(document.getElementById('windAngle').value) * Math.PI) / 180;
-            let windMilsX = 0.1 * ((1.1 * windSpeed) * Math.sin(windAngleRad));
+
+            let range;
+            if (activeTarget) {
+                range = targets[activeTarget].range;
+            } else {
+                range = parseFloat(document.getElementById('targetRangeT1').value); // Default range
+            }
+
+            // Calculate wind shift based on range and wind speed
+            let windMilsX = calculateWindShift(range, windSpeed) * Math.sin(windAngleRad);
+
             const milScale = parseFloat(document.getElementById('milScale').value);
-
-            // Get range and calculate TOF
-            const range = parseFloat(document.getElementById('range').value);
             const projectileTOF = calculateTOF(range);
-
             const impactDuration = parseFloat(document.getElementById('impactDuration').value);
             const impactWidth = parseFloat(document.getElementById('impactWidth').value);
             const impactHeight = parseFloat(document.getElementById('impactHeight').value);
@@ -294,15 +527,23 @@
                 }, impactDuration);
 
                 // Check hit
-                const targetSizePx = parseFloat(document.getElementById('targetSize').value) * 50;
-                if (
-                    impactX >= canvas.width / 2 - targetSizePx / 2 &&
-                    impactX <= canvas.width / 2 + targetSizePx / 2 &&
-                    impactY >= canvas.height / 2 - targetSizePx / 2 &&
-                    impactY <= canvas.width / 2 + targetSizePx / 2
-                ) {
-                    score++;
-                    document.getElementById('score').textContent = score;
+                if (activeTarget) {
+                    const target = targets[activeTarget];
+                    const targetSizePx = parseFloat(document.getElementById(`targetSize${activeTarget}`).value) * milScale;
+
+                    if (
+                        impactX >= target.x &&
+                        impactX <= target.x + targetSizePx &&
+                        impactY >= target.y &&
+                        impactY <= target.y + targetSizePx
+                    ) {
+                        score++;
+                        document.getElementById('score').textContent = score;
+                    } else {
+                        console.log("Missed target: " + activeTarget)
+                    }
+                } else {
+                    console.log("No target selected");
                 }
             }, projectileTOF);
         });
@@ -342,22 +583,34 @@
             }
         }
 
+ function drawTargets() {
+            const milScale = parseFloat(document.getElementById('milScale').value);
+
+            for (const targetId in targets) {
+                ctx.fillStyle = 'white'; // Solid white targets - MUST BE INSIDE THE LOOP
+                const target = targets[targetId];
+                const targetSizePx = parseFloat(document.getElementById(`targetSize${targetId}`).value) * milScale;
+
+                ctx.fillRect(target.x, target.y, targetSizePx, targetSizePx);
+
+                // Draw target labels to the left of the rectangles
+                ctx.fillStyle = 'black';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(target.label, target.x - 5, target.y + targetSizePx / 2);
+            }
+        }
+
+
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Draw background image
             ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
-            // Draw target area (white rectangle)
-            const milScale = parseFloat(document.getElementById('milScale').value);
-            const targetSizePx = parseFloat(document.getElementById('targetSize').value) * milScale;
-            ctx.fillStyle = 'white';
-            ctx.fillRect(
-                canvas.width / 2 - targetSizePx / 2,
-                canvas.height / 2 - targetSizePx / 2,
-                targetSizePx,
-                targetSizePx
-            );
+            // Draw targets
+            drawTargets();
 
             // Draw impacts
             impacts.forEach((impact) => {
@@ -382,9 +635,30 @@
         });
 
         // Set initial crosshair scale
+        const initialDarkness = 0.15; // Set initial darkness to 15%
+        document.getElementById('backgroundDarkness').value = initialDarkness; // Set the slider value
+        updateBackgroundDarkness(initialDarkness); // Apply the initial darkness
+
+        // Set initial crosshair scale
         crosshairScaleInput.value = 125;
         crosshairScaleNumberInput.value = 125;
         crosshairScaleInput.dispatchEvent(new Event('input'));
+
+        // Collapsible script
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        }
     </script>
 </body>
 
