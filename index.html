@@ -19,6 +19,7 @@
             padding: 20px;
             background: #f0f0f0;
             z-index: 10;
+            overflow-y: auto; /* Add scrolling for controls panel */
         }
 
         canvas {
@@ -70,6 +71,7 @@
             text-align: left;
             outline: none;
             font-size: 15px;
+            margin-bottom: 5px;
         }
 
         .active,
@@ -83,6 +85,7 @@
             overflow: hidden;
             transition: max-height 0.2s ease-out;
             background-color: #f1f1f1;
+            margin-bottom: 10px;
         }
 
         #targetButtons {
@@ -100,19 +103,21 @@
             cursor: pointer;
         }
 
-        /* Background Overlay Style */
-        #backgroundOverlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.15);
-            /* Initial darkness: 15% */
-            z-index: 2;
-            /* Place above background image */
-            pointer-events: none;
-            /* Allows clicks to pass through */
+        /* Score section styling */
+        .score-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+        }
+
+        .score-section p {
+            margin: 0;
+            margin-right: 15px;
+            font-weight: bold;
+            font-size: 18px;
         }
     </style>
 </head>
@@ -127,22 +132,47 @@
                 <button id="T4" onclick="setTarget('T4')">T4</button>
                 <button id="T5" onclick="setTarget('T5')">T5</button>
             </div>
-            <div id="backgroundOverlay"></div>
-            <!-- Overlay for background darkness -->
             <canvas id="mainCanvas"></canvas>
             <img id="crosshair" src="crosshair.png" style="pointer-events:none;">
         </div>
         <div id="controls">
             <h3>Controls</h3>
 
-            <!-- Mil Scale (Pixels) -->
-            <div class="control-group">
-                <label for="milScale">Mil Scale (pixels):</label>
-                <input type="number" id="milScale" min="1" value="50">
+            <!-- Score Section -->
+            <div class="score-section">
+                <p>Score: <span id="score">0</span></p>
+                <button id="reset">Reset Score</button>
             </div>
 
+            <!-- Wind Settings (Expanded by default) -->
+            <button type="button" class="collapsible active">Wind Settings</button>
+            <div class="content" style="max-height: 300px;">
+                <!-- Wind Speed -->
+                <div class="control-group">
+                    <label for="windSpeed">Wind Speed (mph):</label>
+                    <input type="number" id="windSpeed" min="0" value="8">
+                </div>
+
+                <!-- Wind Angle -->
+                <div class="control-group">
+                    <label for="windAngle">Wind Angle (degrees):</label>
+                    <input type="number" id="windAngle" min="0" max="360" value="90">
+                </div>
+
+                <!-- Wind Uncertainty -->
+                <div class="control-group">
+                    <label for="windUncertainty">Wind Uncertainty (mph):</label>
+                    <input type="number" id="windUncertainty" min="0" value="3">
+                    <label for="windUncertaintyToggle">Wind Uncertainty On:</label>
+                    <input type="checkbox" id="windUncertaintyToggle" checked>
+                    <button id="applyWindUncertainty">Apply</button>
+                </div>
+            </div>
+
+            <!-- Target Settings (Collapsed) -->
             <button type="button" class="collapsible">Target Settings</button>
             <div class="content">
+              
                 <div class="control-group">
                     <h4>T1</h4>
                     <div class="control-row">
@@ -204,82 +234,65 @@
                 </div>
             </div>
 
-            <!-- Wind Speed -->
-            <div class="control-group">
-                <label for="windSpeed">Wind Speed (mph):</label>
-                <input type="number" id="windSpeed" min="0" value="8">
+            <!-- Recoil Settings (Collapsed) -->
+            <button type="button" class="collapsible">Recoil Settings</button>
+            <div class="content">
+                <div class="control-group">
+                    <label for="recoilToggle">Recoil On:</label>
+                    <input type="checkbox" id="recoilToggle" checked>
+                </div>
+                <div class="control-group">
+                    <label for="verticalRecoil">Vertical Recoil (mils):</label>
+                    <input type="number" id="verticalRecoil" value="-1.1">
+                </div>
+                <div class="control-group">
+                    <label for="horizontalRecoil">Horizontal Recoil (mils):</label>
+                    <input type="number" id="horizontalRecoil" value="0.2">
+                </div>
+                <div class="control-group">
+                    <label for="recoilRandomisation">Recoil randomisation (mils):</label>
+                    <input type="number" id="recoilRandomisation" value="0.2">
+                </div>
             </div>
 
-            <!-- Wind Angle -->
-            <div class="control-group">
-                <label for="windAngle">Wind Angle (degrees):</label>
-                <input type="number" id="windAngle" min="0" max="360" value="90">
+            <!-- Impact Settings (Collapsed) -->
+            <button type="button" class="collapsible">Impact Settings</button>
+            <div class="content">
+                <div class="control-group">
+                    <label for="impactDuration">Impact Duration (ms):</label>
+                    <input type="number" id="impactDuration" min="0" value="200">
+                </div>
+                <div class="control-group">
+                    <label for="impactWidth">Impact Width (pixels):</label>
+                    <input type="number" id="impactWidth" min="1" value="5">
+                </div>
+                <div class="control-group">
+                    <label for="impactHeight">Impact Height (pixels):</label>
+                    <input type="number" id="impactHeight" min="1" value="5">
+                </div>
             </div>
 
-            <!-- Wind Uncertainty -->
-            <div class="control-group">
-                <label for="windUncertainty">Wind Uncertainty (mph):</label>
-                <input type="number" id="windUncertainty" min="0" value="3">
-                <label for="windUncertaintyToggle">Wind Uncertainty On:</label>
-                <input type="checkbox" id="windUncertaintyToggle" checked>
-                <button id="applyWindUncertainty">Apply</button>
-            </div>
-
-            <!-- Impact Duration -->
-            <div class="control-group">
-                <label for="impactDuration">Impact Duration (ms):</label>
-                <input type="number" id="impactDuration" min="0" value="200">
-            </div>
-
-            <!-- Impact Size -->
-            <div class="control-group">
-                <label for="impactWidth">Impact Width (pixels):</label>
-                <input type="number" id="impactWidth" min="1" value="5">
-            </div>
-            <div class="control-group">
-                <label for="impactHeight">Impact Height (pixels):</label>
-                <input type="number" id="impactHeight" min="1" value="5">
-            </div>
-
-            <!-- Recoil -->
-            <h3>Recoil</h3>
-            <div class="control-group">
-                <label for="recoilToggle">Recoil On:</label>
-                <input type="checkbox" id="recoilToggle" checked>
-            </div>
-            <div class="control-group">
-                <label for="verticalRecoil">Vertical Recoil (mils):</label>
-                <input type="number" id="verticalRecoil" value="-1.1">
-            </div>
-            <div class="control-group">
-                <label for="horizontalRecoil">Horizontal Recoil (mils):</label>
-                <input type="number" id="horizontalRecoil" value="0.2">
-            </div>
-            <div class="control-group">
-                <label for="recoilRandomisation">Recoil randomisation (mils):</label>
-                <input type="number" id="recoilRandomisation" value="0.2">
-            </div>
-
-            <!-- Reset Button and Score -->
-            <button id="reset">Reset Score</button>
-            <p>Score: <span id="score">0</span></p>
-            <!-- Crosshair Scaling -->
-            <div class="control-group">
-                <label for="crosshairScale">Crosshair Scaling (%):</label>
-                <input type="range" id="crosshairScale" min="0" max="200" value="100">
-                <input type="number" id="crosshairScaleNumber" min="0" max="200" value="100">
-            </div>
-
-            <!-- Miliradian Overlay -->
-            <div class="control-group">
-                <label for="milOverlay">Miliradian Overlay:</label>
-                <input type="checkbox" id="milOverlay">
-            </div>
-
-            <!-- Background Darkness -->
-            <div class="control-group">
-                <label for="backgroundDarkness">Background Darkness:</label>
-                <input type="range" id="backgroundDarkness" min="0" max="1" value="0.15" step="0.01" oninput="updateBackgroundDarkness(this.value)">
+            <!-- Graphical Settings (Collapsed) -->
+            <button type="button" class="collapsible">Graphical Settings</button>
+            <div class="content">
+                                <!-- Mil Scale (Pixels) -->
+                <div class="control-group">
+                    <label for="milScale">Mil Scale (pixels):</label>
+                    <input type="number" id="milScale" min="1" value="50">
+                </div>
+				<div class="control-group">
+                    <label for="crosshairScale">Crosshair Scaling (%):</label>
+                    <input type="range" id="crosshairScale" min="0" max="200" value="100">
+                    <input type="number" id="crosshairScaleNumber" min="0" max="200" value="100">
+                </div>
+                <div class="control-group">
+                    <label for="backgroundDarkness">Background Darkness:</label>
+                    <input type="range" id="backgroundDarkness" min="0" max="1" value="0.15" step="0.01">
+                </div>
+                <div class="control-group">
+                    <label for="milOverlay">Miliradian Overlay:</label>
+                    <input type="checkbox" id="milOverlay">
+                </div>
             </div>
         </div>
     </div>
@@ -288,12 +301,12 @@
         const canvas = document.getElementById('mainCanvas');
         const ctx = canvas.getContext('2d');
         const crosshair = document.getElementById('crosshair');
-        const backgroundOverlay = document.getElementById('backgroundOverlay'); // Get the overlay element
         let impacts = [];
         let score = 0;
         let windUncertaintyApplied = 0;
         let activeTarget = null;
         let targets = {};
+        let backgroundDarkness = 0.15; // Initial background darkness
 
         // Load background image
         const backgroundImage = new Image();
@@ -356,11 +369,6 @@
             targets[targetId].size = parseFloat(document.getElementById(`targetSize${targetId}`).value);
         }
 
-        // Function to update background darkness
-        function updateBackgroundDarkness(darkness) {
-            backgroundOverlay.style.backgroundColor = `rgba(0, 0, 0, ${darkness})`;
-        }
-
         function updateTargetRange(targetId) {
             targets[targetId].range = parseFloat(document.getElementById(`targetRange${targetId}`).value);
         }
@@ -407,6 +415,11 @@
             const scale = parseFloat(crosshairScaleNumberInput.value) / 100;
             crosshair.style.transform = `scale(${scale})`;
             crosshairScaleInput.value = crosshairScaleNumberInput.value;
+        });
+
+        // Update background darkness
+        document.getElementById('backgroundDarkness').addEventListener('input', function() {
+            backgroundDarkness = parseFloat(this.value);
         });
 
         // Linear interpolation function
@@ -583,7 +596,7 @@
             }
         }
 
- function drawTargets() {
+        function drawTargets() {
             const milScale = parseFloat(document.getElementById('milScale').value);
 
             for (const targetId in targets) {
@@ -602,14 +615,22 @@
             }
         }
 
-
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw background image
+            // Draw background image with darkness applied
+            ctx.save(); // Save the current state
+            
+            // First, draw the background image
             ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+            
+            // Apply darkness to the background only
+            ctx.fillStyle = `rgba(0, 0, 0, ${backgroundDarkness})`;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.restore(); // Restore the state
 
-            // Draw targets
+            // Draw targets (on top of the darkened background)
             drawTargets();
 
             // Draw impacts
@@ -637,7 +658,7 @@
         // Set initial crosshair scale
         const initialDarkness = 0.15; // Set initial darkness to 15%
         document.getElementById('backgroundDarkness').value = initialDarkness; // Set the slider value
-        updateBackgroundDarkness(initialDarkness); // Apply the initial darkness
+        backgroundDarkness = initialDarkness; // Set the initial darkness value
 
         // Set initial crosshair scale
         crosshairScaleInput.value = 125;
@@ -659,6 +680,11 @@
                 }
             });
         }
+
+        // Initialize the Wind Settings section as expanded by default
+        document.getElementsByClassName("collapsible")[0].classList.add("active");
+        var windSettingsContent = document.getElementsByClassName("collapsible")[0].nextElementSibling;
+        windSettingsContent.style.maxHeight = windSettingsContent.scrollHeight + "px";
     </script>
 </body>
 
