@@ -119,6 +119,13 @@
             font-weight: bold;
             font-size: 18px;
         }
+
+        /* Sound Controls */
+        .sound-controls {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ccc;
+        }
     </style>
 </head>
 
@@ -270,12 +277,20 @@
                     <label for="impactHeight">Impact Height (pixels):</label>
                     <input type="number" id="impactHeight" min="1" value="5">
                 </div>
+                <div class="sound-controls">
+                    <label for="soundToggle">Target Hit Sound:</label>
+                    <input type="checkbox" id="soundToggle" checked>
+                    <div class="control-group">
+                        <label for="soundVolume">Sound Volume:</label>
+                        <input type="range" id="soundVolume" min="0" max="1" step="0.1" value="0.5">
+                    </div>
+                </div>
             </div>
 
             <!-- Graphical Settings (Collapsed) -->
             <button type="button" class="collapsible">Graphical Settings</button>
             <div class="content">
-                                <!-- Mil Scale (Pixels) -->
+                <!-- Mil Scale (Pixels) -->
                 <div class="control-group">
                     <label for="milScale">Mil Scale (pixels):</label>
                     <input type="number" id="milScale" min="1" value="50">
@@ -297,10 +312,17 @@
         </div>
     </div>
 
+    <!-- Audio element for playing target hit sound -->
+    <audio id="targetHitSound" preload="auto">
+        <source src="data:audio/mp3;base64,SUQzAwAAAAAAElRJVDIAAAAAAAAAAAAAAAAAAAD/+5BkAAAgIABf5QAAAAAUD/DyAAAAY7SZIewtASg8GCb0MaAIAIAAAACUFVFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/uQZAAA0XQ6UG8AALGdKcN8AYQAAAA0gAAAAAAADSAAAAAVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
     <script>
         const canvas = document.getElementById('mainCanvas');
         const ctx = canvas.getContext('2d');
         const crosshair = document.getElementById('crosshair');
+        const targetHitSound = document.getElementById('targetHitSound');
         let impacts = [];
         let score = 0;
         let windUncertaintyApplied = 0;
@@ -371,6 +393,36 @@
 
         function updateTargetRange(targetId) {
             targets[targetId].range = parseFloat(document.getElementById(`targetRange${targetId}`).value);
+        }
+
+        // Function to play target hit sound
+        function playTargetHitSound() {
+            if (document.getElementById('soundToggle').checked) {
+                targetHitSound.volume = parseFloat(document.getElementById('soundVolume').value);
+                targetHitSound.currentTime = 0; // Reset sound to beginning
+                targetHitSound.play().catch(e => console.log("Error playing sound:", e));
+            }
+        }
+
+        // Function to check if an impact is on any target
+        function checkImpactOnAnyTarget(impactX, impactY) {
+            const milScale = parseFloat(document.getElementById('milScale').value);
+            
+            for (const targetId in targets) {
+                const target = targets[targetId];
+                const targetSizePx = parseFloat(document.getElementById(`targetSize${targetId}`).value) * milScale;
+                
+                if (
+                    impactX >= target.x &&
+                    impactX <= target.x + targetSizePx &&
+                    impactY >= target.y &&
+                    impactY <= target.y + targetSizePx
+                ) {
+                    return true;
+                }
+            }
+            
+            return false;
         }
 
         // Resize canvas to fit its container
@@ -471,221 +523,4 @@
             return windShift * (windSpeed / 10); // Scale wind shift by wind speed, relative to 10mph
         }
 
-        // Fire projectile
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            let clickX = e.clientX - rect.left;
-            let clickY = e.clientY - rect.top;
-            const windSpeed = parseFloat(document.getElementById('windSpeed').value);
-            const windAngleRad = (parseFloat(document.getElementById('windAngle').value) * Math.PI) / 180;
-
-            let range;
-            if (activeTarget) {
-                range = targets[activeTarget].range;
-            } else {
-                range = parseFloat(document.getElementById('targetRangeT1').value); // Default range
-            }
-
-            // Calculate wind shift based on range and wind speed
-            let windMilsX = calculateWindShift(range, windSpeed) * Math.sin(windAngleRad);
-
-            const milScale = parseFloat(document.getElementById('milScale').value);
-            const projectileTOF = calculateTOF(range);
-            const impactDuration = parseFloat(document.getElementById('impactDuration').value);
-            const impactWidth = parseFloat(document.getElementById('impactWidth').value);
-            const impactHeight = parseFloat(document.getElementById('impactHeight').value);
-
-            // Apply wind uncertainty
-            windMilsX += windUncertaintyApplied;
-
-            // Apply recoil
-            let verticalRecoil = 0;
-            let horizontalRecoil = 0;
-            const recoilToggle = document.getElementById('recoilToggle').checked;
-
-            if (recoilToggle) {
-                const verticalRecoilMils = parseFloat(document.getElementById('verticalRecoil').value);
-                const horizontalRecoilMils = parseFloat(document.getElementById('horizontalRecoil').value);
-                const recoilRandomisationMils = parseFloat(document.getElementById('recoilRandomisation').value);
-
-                const randomVerticalMils = (Math.random() * 2 - 1) * recoilRandomisationMils;
-                const randomHorizontalMils = (Math.random() * 2 - 1) * recoilRandomisationMils;
-
-                // Convert recoil to pixels
-                verticalRecoil = (verticalRecoilMils + randomVerticalMils) * milScale;
-                horizontalRecoil = (horizontalRecoilMils + randomHorizontalMils) * milScale;
-            }
-
-            // Update crosshair position WITH recoil
-            updateCrosshairPosition(
-                crosshairX + horizontalRecoil,
-                crosshairY + verticalRecoil
-            );
-
-            // Calculate impact position
-            let impactX = clickX + windMilsX * milScale;
-            let impactY = clickY;
-
-            const newImpact = {
-                x: impactX,
-                y: impactY,
-                width: impactWidth,
-                height: impactHeight
-            };
-
-            setTimeout(() => {
-                impacts.push(newImpact);
-                setTimeout(() => {
-                    impacts = impacts.filter(i => i !== newImpact);
-                }, impactDuration);
-
-                // Check hit
-                if (activeTarget) {
-                    const target = targets[activeTarget];
-                    const targetSizePx = parseFloat(document.getElementById(`targetSize${activeTarget}`).value) * milScale;
-
-                    if (
-                        impactX >= target.x &&
-                        impactX <= target.x + targetSizePx &&
-                        impactY >= target.y &&
-                        impactY <= target.y + targetSizePx
-                    ) {
-                        score++;
-                        document.getElementById('score').textContent = score;
-                    } else {
-                        console.log("Missed target: " + activeTarget)
-                    }
-                } else {
-                    console.log("No target selected");
-                }
-            }, projectileTOF);
-        });
-
-        document.getElementById('applyWindUncertainty').addEventListener('click', () => {
-            const windUncertainty = parseFloat(document.getElementById('windUncertainty').value);
-            const windUncertaintyToggle = document.getElementById('windUncertaintyToggle').checked;
-
-            if (windUncertaintyToggle) {
-                windUncertaintyApplied = (Math.random() * 2 - 1) * (0.1 * windUncertainty);
-            } else {
-                windUncertaintyApplied = 0;
-            }
-        });
-
-        function drawMiliradianOverlay() {
-            if (!document.getElementById('milOverlay').checked) return;
-
-            ctx.strokeStyle = '#ccc';
-            ctx.lineWidth = 1;
-
-            // Draw vertical lines
-            const milScale = parseFloat(document.getElementById('milScale').value);
-            for (let x = 0; x <= canvas.width; x += milScale) {
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, canvas.height);
-                ctx.stroke();
-            }
-
-            // Draw horizontal lines
-            for (let y = 0; y <= canvas.width; y += milScale) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(canvas.width, y);
-                ctx.stroke();
-            }
-        }
-
-        function drawTargets() {
-            const milScale = parseFloat(document.getElementById('milScale').value);
-
-            for (const targetId in targets) {
-                ctx.fillStyle = 'white'; // Solid white targets - MUST BE INSIDE THE LOOP
-                const target = targets[targetId];
-                const targetSizePx = parseFloat(document.getElementById(`targetSize${targetId}`).value) * milScale;
-
-                ctx.fillRect(target.x, target.y, targetSizePx, targetSizePx);
-
-                // Draw target labels to the left of the rectangles
-                ctx.fillStyle = 'black';
-                ctx.font = '14px Arial';
-                ctx.textAlign = 'right';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(target.label, target.x - 5, target.y + targetSizePx / 2);
-            }
-        }
-
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw background image with darkness applied
-            ctx.save(); // Save the current state
-            
-            // First, draw the background image
-            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-            
-            // Apply darkness to the background only
-            ctx.fillStyle = `rgba(0, 0, 0, ${backgroundDarkness})`;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.restore(); // Restore the state
-
-            // Draw targets (on top of the darkened background)
-            drawTargets();
-
-            // Draw impacts
-            impacts.forEach((impact) => {
-                ctx.strokeStyle = 'black';
-                ctx.beginPath();
-                ctx.moveTo(impact.x - impact.width / 2, impact.y - impact.height / 2);
-                ctx.lineTo(impact.x + impact.width / 2, impact.y + impact.height / 2);
-                ctx.moveTo(impact.x + impact.width / 2, impact.y - impact.height / 2);
-                ctx.lineTo(impact.x - impact.width / 2, impact.y + impact.height / 2);
-                ctx.stroke();
-            });
-
-            drawMiliradianOverlay();
-
-            requestAnimationFrame(draw);
-        }
-
-        document.getElementById('reset').addEventListener('click', () => {
-            score = 0;
-            impacts = [];
-            document.getElementById('score').textContent = score;
-        });
-
-        // Set initial crosshair scale
-        const initialDarkness = 0.15; // Set initial darkness to 15%
-        document.getElementById('backgroundDarkness').value = initialDarkness; // Set the slider value
-        backgroundDarkness = initialDarkness; // Set the initial darkness value
-
-        // Set initial crosshair scale
-        crosshairScaleInput.value = 125;
-        crosshairScaleNumberInput.value = 125;
-        crosshairScaleInput.dispatchEvent(new Event('input'));
-
-        // Collapsible script
-        var coll = document.getElementsByClassName("collapsible");
-        var i;
-
-        for (i = 0; i < coll.length; i++) {
-            coll[i].addEventListener("click", function() {
-                this.classList.toggle("active");
-                var content = this.nextElementSibling;
-                if (content.style.maxHeight) {
-                    content.style.maxHeight = null;
-                } else {
-                    content.style.maxHeight = content.scrollHeight + "px";
-                }
-            });
-        }
-
-        // Initialize the Wind Settings section as expanded by default
-        document.getElementsByClassName("collapsible")[0].classList.add("active");
-        var windSettingsContent = document.getElementsByClassName("collapsible")[0].nextElementSibling;
-        windSettingsContent.style.maxHeight = windSettingsContent.scrollHeight + "px";
-    </script>
-</body>
-
-</html>
+        //
